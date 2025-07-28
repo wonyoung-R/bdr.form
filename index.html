@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 서울 국제 유소년 농구 대회 - 참가신청서</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>참가신청서</h1>
+            <p class="subtitle">2025 서울 국제 유소년 농구 대회</p>
+        </header>
+
+        <form id="applicationForm">
+            <section class="team-info">
+                <h2>팀 정보</h2>
+                <div class="form-group">
+                    <label for="teamName">팀명 <span class="required">*</span></label>
+                    <input type="text" id="teamName" name="teamName" required>
+                </div>
+                <div class="form-group">
+                    <label for="representativeName">대표자 이름 <span class="required">*</span></label>
+                    <input type="text" id="representativeName" name="representativeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="representativeContact">대표자 연락처 <span class="required">*</span></label>
+                    <input type="tel" id="representativeContact" name="representativeContact" 
+                           placeholder="010-0000-0000" required>
+                </div>
+            </section>
+
+            <section class="players-section">
+                <h2>참가선수명단 <span class="player-count">(현재: <span id="currentPlayerCount">0</span>명 / 최대: 20명)</span></h2>
+                
+                <!-- 데스크톱용 테이블 -->
+                <div class="table-container">
+                    <table id="playersTable">
+                        <thead>
+                            <tr>
+                                <th>순번</th>
+                                <th>이름 <span class="required">*</span></th>
+                                <th>생년월일 <span class="required">*</span></th>
+                                <th>등번호 <span class="required">*</span></th>
+                                <th>포지션 <span class="required">*</span></th>
+                                <th>삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 모바일용 카드 -->
+                <div class="player-cards" id="playerCards">
+                </div>
+                
+                <button type="button" id="addPlayerBtn" class="add-player-btn">+ 선수 추가</button>
+            </section>
+
+            <div class="warning-box">
+                <h3>⚠️ 주의사항</h3>
+                <ul>
+                    <li>선수는 <strong>최소 5명 이상</strong> 필수 입력해야 합니다.</li>
+                    <li>정보를 잘못 기재하실 경우 <strong>참가가 취소</strong>될 수 있습니다.</li>
+                    <li>모든 필수 항목(*)은 반드시 입력해주세요.</li>
+                </ul>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submitBtn" class="submit-btn">제출하기</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 확인 모달 -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>신청 내용 확인</h2>
+                <p>아래 내용이 맞는지 확인해주세요.</p>
+            </div>
+            
+            <div class="modal-body">
+                <div class="confirm-section">
+                    <h3>팀 정보</h3>
+                    <div class="team-info-confirm">
+                        <div class="info-row">
+                            <span class="info-label">팀명</span>
+                            <span class="info-value" id="confirmTeamName"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">대표자 이름</span>
+                            <span class="info-value" id="confirmRepName"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">대표자 연락처</span>
+                            <span class="info-value" id="confirmRepContact"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="confirm-section">
+                    <h3>참가선수명단 (<span id="confirmPlayerCount"></span>명)</h3>
+                    <div class="players-confirm" id="confirmPlayersList">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="confirm-btn" onclick="submitConfirmed()">등록하기</button>
+                <button type="button" class="edit-btn" onclick="closeModal()">수정하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
