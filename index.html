@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <header>
+            <img src="syibs-logo.png" alt="SYIBS Logo" class="header-logo">
             <h1>참가신청서</h1>
             <p class="subtitle">2025 서울 국제 유소년 농구 대회</p>
         </header>
@@ -16,6 +17,17 @@
         <form id="applicationForm">
             <section class="team-info">
                 <h2>팀 정보</h2>
+                <div class="form-group">
+                    <label for="category">종별 <span class="required">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="">선택하세요</option>
+                        <option value="U12B">U12B (남)</option>
+                        <option value="U14B">U14B (남)</option>
+                        <option value="U14G">U14G (여)</option>
+                        <option value="U16B">U16B (남)</option>
+                        <option value="U16G">U16G (여)</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="teamName">팀명 <span class="required">*</span></label>
                     <input type="text" id="teamName" name="teamName" required>
@@ -86,6 +98,10 @@
                 <div class="confirm-section">
                     <h3>팀 정보</h3>
                     <div class="team-info-confirm">
+                        <div class="info-row">
+                            <span class="info-label">종별</span>
+                            <span class="info-value" id="confirmCategory"></span>
+                        </div>
                         <div class="info-row">
                             <span class="info-label">팀명</span>
                             <span class="info-value" id="confirmTeamName"></span>

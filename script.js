@@ -6,6 +6,8 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvGR4t-wlV1m
 
 // 페이지 로드 시 초기 설정
 document.addEventListener('DOMContentLoaded', function() {
+    // SNS 썸네일 메타태그 생성
+    createSocialThumbnail();
     // 초기 5명의 선수 입력 행 추가
     for (let i = 0; i < 5; i++) {
         addPlayerRow();
@@ -16,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('applicationForm').addEventListener('submit', handleSubmit);
     
     // 실시간 유효성 검사
+    document.getElementById('category').addEventListener('blur', validateTeamInfo);
     document.getElementById('teamName').addEventListener('blur', validateTeamInfo);
     document.getElementById('representativeName').addEventListener('blur', validateTeamInfo);
     document.getElementById('representativeContact').addEventListener('blur', validateTeamInfo);
@@ -235,10 +238,12 @@ function countFilledPlayerRows() {
 
 // 팀 정보 유효성 검사
 function validateTeamInfo() {
+    const category = document.getElementById('category');
     const teamName = document.getElementById('teamName');
     const representativeName = document.getElementById('representativeName');
     const representativeContact = document.getElementById('representativeContact');
     
+    validateField(category);
     validateField(teamName);
     validateField(representativeName);
     validateField(representativeContact);
@@ -289,11 +294,12 @@ function validateField(field) {
                       field.classList.contains('player-birthdate') || 
                       field.classList.contains('player-number') || 
                       field.classList.contains('player-position') ||
+                      field.id === 'category' ||
                       field.id === 'teamName' ||
                       field.id === 'representativeName' ||
                       field.id === 'representativeContact';
     
-    if (isRequired && !field.value.trim()) {
+    if (isRequired && field.value.trim() === '') {
         field.classList.add('error');
     } else {
         field.classList.remove('error');
@@ -304,12 +310,45 @@ function validateField(field) {
 async function handleSubmit(e) {
     e.preventDefault();
     
+    // 모든 에러 클래스 초기화
+    document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    
     // 팀 정보 유효성 검사
-    validateTeamInfo();
+    const category = document.getElementById('category');
+    const teamName = document.getElementById('teamName');
+    const representativeName = document.getElementById('representativeName');
+    const representativeContact = document.getElementById('representativeContact');
+    
+    let hasTeamErrors = false;
+    
+    if (!category.value) {
+        category.classList.add('error');
+        hasTeamErrors = true;
+    }
+    if (!teamName.value.trim()) {
+        teamName.classList.add('error');
+        hasTeamErrors = true;
+    }
+    if (!representativeName.value.trim()) {
+        representativeName.classList.add('error');
+        hasTeamErrors = true;
+    }
+    if (!representativeContact.value.trim()) {
+        representativeContact.classList.add('error');
+        hasTeamErrors = true;
+    } else {
+        // 전화번호 형식 검사
+        const phoneRegex = /^010-\d{4}-\d{4}$/;
+        if (!phoneRegex.test(representativeContact.value)) {
+            representativeContact.classList.add('error');
+            hasTeamErrors = true;
+        }
+    }
     
     // 선수 정보 유효성 검사
     const playerRows = document.querySelectorAll('#playersTableBody tr');
     const validPlayers = [];
+    let hasPlayerErrors = false;
     
     playerRows.forEach(row => {
         const inputs = row.querySelectorAll('input, select');
@@ -325,9 +364,10 @@ async function handleSubmit(e) {
         
         if (hasAnyValue) {
             if (!hasAllValues) {
-                inputs.forEach(input => {
-                    if (!input.value.trim()) {
+                inputs.forEach((input, index) => {
+                    if (input.value.trim() === '') {
                         input.classList.add('error');
+                        hasPlayerErrors = true;
                     }
                 });
             } else {
@@ -337,9 +377,7 @@ async function handleSubmit(e) {
     });
     
     // 오류 체크
-    const hasErrors = document.querySelectorAll('.error').length > 0;
-    
-    if (hasErrors) {
+    if (hasTeamErrors || hasPlayerErrors) {
         alert('필수 입력 항목을 모두 입력해주세요.');
         return;
     }
@@ -352,6 +390,7 @@ async function handleSubmit(e) {
     
     // 확인 모달 표시
     showConfirmModal({
+        category: document.getElementById('category').value,
         teamName: document.getElementById('teamName').value,
         representativeName: document.getElementById('representativeName').value,
         representativeContact: document.getElementById('representativeContact').value,
@@ -368,6 +407,8 @@ function showConfirmModal(data) {
     };
     
     // 팀 정보 표시
+    const categoryText = document.getElementById('category').options[document.getElementById('category').selectedIndex].text;
+    document.getElementById('confirmCategory').textContent = categoryText;
     document.getElementById('confirmTeamName').textContent = data.teamName;
     document.getElementById('confirmRepName').textContent = data.representativeName;
     document.getElementById('confirmRepContact').textContent = data.representativeContact;
@@ -484,4 +525,44 @@ async function sendToGoogleSheet(data) {
     
     // no-cors 모드에서는 response를 읽을 수 없으므로 성공으로 간주
     return true;
+}
+
+// SNS 썸네일 메타태그 생성
+function createSocialThumbnail() {
+    // Open Graph 메타태그 추가
+    const ogTitle = document.createElement('meta');
+    ogTitle.setAttribute('property', 'og:title');
+    ogTitle.setAttribute('content', '2025 서울 국제 유소년 대회 참가신청서');
+    document.head.appendChild(ogTitle);
+    
+    const ogDescription = document.createElement('meta');
+    ogDescription.setAttribute('property', 'og:description');
+    ogDescription.setAttribute('content', '2025 서울 국제 유소년 농구 대회 참가신청서');
+    document.head.appendChild(ogDescription);
+    
+    const ogImage = document.createElement('meta');
+    ogImage.setAttribute('property', 'og:image');
+    ogImage.setAttribute('content', window.location.origin + '/syibs-logo.png');
+    document.head.appendChild(ogImage);
+    
+    // Twitter Card 메타태그 추가
+    const twitterCard = document.createElement('meta');
+    twitterCard.setAttribute('name', 'twitter:card');
+    twitterCard.setAttribute('content', 'summary_large_image');
+    document.head.appendChild(twitterCard);
+    
+    const twitterTitle = document.createElement('meta');
+    twitterTitle.setAttribute('name', 'twitter:title');
+    twitterTitle.setAttribute('content', '2025 서울 국제 유소년 대회 참가신청서');
+    document.head.appendChild(twitterTitle);
+    
+    const twitterDescription = document.createElement('meta');
+    twitterDescription.setAttribute('name', 'twitter:description');
+    twitterDescription.setAttribute('content', '2025 서울 국제 유소년 농구 대회 참가신청서');
+    document.head.appendChild(twitterDescription);
+    
+    const twitterImage = document.createElement('meta');
+    twitterImage.setAttribute('name', 'twitter:image');
+    twitterImage.setAttribute('content', window.location.origin + '/syibs-logo.png');
+    document.head.appendChild(twitterImage);
 }
