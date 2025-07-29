@@ -542,7 +542,7 @@ function createSocialThumbnail() {
     
     const ogImage = document.createElement('meta');
     ogImage.setAttribute('property', 'og:image');
-    ogImage.setAttribute('content', window.location.href.replace(/[^\/]*$/, '') + 'syibs-logo.png');
+    ogImage.setAttribute('content', window.location.href.replace(/[^\/]*$/, '') + 'images/image.png');
     document.head.appendChild(ogImage);
     
     // Twitter Card 메타태그 추가
@@ -563,6 +563,6 @@ function createSocialThumbnail() {
     
     const twitterImage = document.createElement('meta');
     twitterImage.setAttribute('name', 'twitter:image');
-    twitterImage.setAttribute('content', window.location.href.replace(/[^\/]*$/, '') + 'syibs-logo.png');
+    twitterImage.setAttribute('content', window.location.href.replace(/[^\/]*$/, '') + 'images/image.png');
     document.head.appendChild(twitterImage);
 }
